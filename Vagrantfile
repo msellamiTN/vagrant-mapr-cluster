@@ -60,7 +60,7 @@ Vagrant.configure("2") do |config|
       edge.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
       edge.vm.provision "shell", inline: <<-SHELL
       echo "127.0.0.1 localhost edge edge.htc-ezmeral.local" | sudo tee -a /tmp/hosts
-      sudo mv /tmp/hosts /etc/hosts
+      sudo cat /tmp/hosts | sudo tee -a /etc/hosts
         SHELL
     end
     # Master Node
@@ -87,7 +87,7 @@ Vagrant.configure("2") do |config|
       master.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
       master.vm.provision "shell", inline: <<-SHELL
       echo "127.0.0.1 localhost master master.htc-ezmeral.local " | sudo tee -a /tmp/hosts
-      sudo mv /tmp/hosts /etc/hosts
+      sudo cat /tmp/hosts | sudo tee -a /etc/hosts
         SHELL
     end
   
@@ -112,8 +112,8 @@ Vagrant.configure("2") do |config|
         worker_ports.each do |guest, host|
           worker.vm.network "forwarded_port", guest: guest, host: host + i,  auto_correct: true
           worker.vm.provision "shell", inline: <<-SHELL
-              echo "127.0.0.1 localhost worker#{i} worker#{i}.htc-ezmeral.local "  | sudo tee -a /tmp/hosts
-              sudo mv /tmp/hosts /etc/hosts
+              sudo echo "127.0.0.1 localhost worker#{i} worker#{i}.htc-ezmeral.local "  | sudo tee -a /tmp/hosts
+              sudo cat /tmp/hosts | sudo tee -a /etc/hosts
             SHELL
        end
         
