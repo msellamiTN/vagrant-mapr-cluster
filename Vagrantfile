@@ -59,8 +59,8 @@ Vagrant.configure("2") do |config|
       edge.vm.network "private_network", type: "static", ip: "192.168.56.10", virtualbox__intnet: true , name: "mapr-cluster-net" 
       edge.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
       edge.vm.provision "shell", inline: <<-SHELL
-      echo "127.0.0.1 localhost edge edge.htc-ezmeral.local" | sudo tee -a /tmp/hosts
-      sudo cat /tmp/hosts | sudo tee -a /etc/hosts
+      sudo echo "127.0.0.1 localhost edge edge.htc-ezmeral.local" | sudo tee -a /tmp/hosts
+      sudo mv /tmp/hosts | sudo tee -a /etc/hosts
         SHELL
     end
     # Master Node
@@ -86,7 +86,7 @@ Vagrant.configure("2") do |config|
       master.vm.network "forwarded_port", guest: 22, host: 2221, id: "ssh", auto_correct: true
       master.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
       master.vm.provision "shell", inline: <<-SHELL
-      echo "127.0.0.1 localhost master master.htc-ezmeral.local " | sudo tee -a /tmp/hosts
+      sudo echo "127.0.0.1 localhost master master.htc-ezmeral.local " | sudo tee -a /tmp/hosts
       sudo cat /tmp/hosts | sudo tee -a /etc/hosts
         SHELL
     end
@@ -111,12 +111,12 @@ Vagrant.configure("2") do |config|
         worker.vm.network "forwarded_port", guest: 22, host: 2221 + i , id: "ssh", auto_correct: true
         worker_ports.each do |guest, host|
           worker.vm.network "forwarded_port", guest: guest, host: host + i,  auto_correct: true
+       end
+       worker.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
           worker.vm.provision "shell", inline: <<-SHELL
               sudo echo "127.0.0.1 localhost worker#{i} worker#{i}.htc-ezmeral.local "  | sudo tee -a /tmp/hosts
-              sudo cat /tmp/hosts | sudo tee -a /etc/hosts
-            SHELL
-       end
-        
+              sudo mv /tmp/hosts | sudo tee -a /etc/hosts
+            SHELL 
       end
     end
        # Provisioning with a shell script

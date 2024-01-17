@@ -1,0 +1,5 @@
+192.168.56.10 mapr-edge edge.htc-ezmeral.local edge
+192.168.56.11 mapr-master master.htc-ezmeral.local master
+192.168.56.12 mapr-worker1 worker1.htc-ezmeral.local worker1
+192.168.56.13 mapr-worker2 worker2.htc-ezmeral.local worker2
+192.168.56.14 mapr-worker3 worker3.htc-ezmeral.local worker3
