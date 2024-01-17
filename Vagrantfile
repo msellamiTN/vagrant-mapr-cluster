@@ -59,10 +59,11 @@ Vagrant.configure("2") do |config|
       edge.vm.network "private_network", type: "static", ip: "192.168.56.10", virtualbox__intnet: true , name: "mapr-cluster-net" 
       edge.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
       edge.vm.provision "shell", inline: <<-SHELL
-      sudo hostnamectl set-hostname edge.htc-ezmeral.local
-      sudo echo "127.0.0.1 localhost edge edge.htc-ezmeral.local" | sudo tee -a /tmp/hosts
-      sudo mv /tmp/hosts | sudo tee -a /etc/hosts
-        SHELL
+            sudo hostnamectl set-hostname edge.htc-ezmeral.local
+            echo "127.0.0.1 localhost edge edge.htc-ezmeral.local" | sudo tee /tmp/hosts
+            #cat /tmp/hosts | sudo tee -a /tmp/hosts
+            sudo cp /tmp/hosts /etc/hosts
+          SHELL
     end
     # Master Node
    
@@ -88,10 +89,11 @@ Vagrant.configure("2") do |config|
       master.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
       master.vm.provision "shell", inline: <<-SHELL
       sudo hostnamectl set-hostname master.htc-ezmeral.local
-      sudo echo "127.0.0.1 localhost master master.htc-ezmeral.local " | sudo tee -a /tmp/hosts
-      sudo cat /tmp/hosts | sudo tee -a /etc/hosts
-        SHELL
-    end
+      echo "127.0.0.1 localhost master master.htc-ezmeral.local" | sudo tee /tmp/hosts
+      #cat /tmp/hosts | sudo tee -a /tmp/hosts
+      sudo cp /tmp/hosts /etc/hosts
+    SHELL
+  end
   
     # Worker Nodes
     (1..3).each do |i|
@@ -115,12 +117,13 @@ Vagrant.configure("2") do |config|
           worker.vm.network "forwarded_port", guest: guest, host: host + i,  auto_correct: true
        end
        worker.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
-          worker.vm.provision "shell", inline: <<-SHELL
-              sudo hostnamectl set-hostname worker#{i}.htc-ezmeral.local
-              sudo echo "127.0.0.1 localhost worker#{i} worker#{i}.htc-ezmeral.local "  | sudo tee -a /tmp/hosts
-              sudo mv /tmp/hosts | sudo tee -a /etc/hosts
-            SHELL 
-      end
+       worker.vm.provision "shell", inline: <<-SHELL
+       sudo hostnamectl set-hostname worker#{i}.htc-ezmeral.local
+       echo "127.0.0.1 localhost worker#{i} worker#{i}.htc-ezmeral.local" | sudo tee /tmp/hosts
+       #cat /tmp/hosts | sudo tee -a /tmp/hosts
+       sudo cp /tmp/hosts /etc/hosts
+     SHELL
+   end
     end
        # Provisioning with a shell script
            # Provisioning with a shell script
