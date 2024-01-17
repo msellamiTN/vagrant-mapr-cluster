@@ -123,9 +123,9 @@ Vagrant.configure("2") do |config|
            # Provisioning with a shell script
     
      # Copy hosts file
-     config.vm.provision "file", source: "/home/user2/mapr-cluster/.ssh/id_rsa", destination: "/home/vagrant/.ssh/id_rsa"
-     config.vm.provision "file", source: "/home/user2/mapr-cluster/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/id_rsa.pub"
-     config.vm.provision "file", source: "/home/user2/mapr-cluster/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/authorized_keys"         
+     config.vm.provision "file", source: "/home/user2/.ssh/id_rsa", destination: "/home/vagrant/.ssh/id_rsa"
+     config.vm.provision "file", source: "/home/user2/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/id_rsa.pub"
+     config.vm.provision "file", source: "/home/user2/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/authorized_keys"         
     #installation of mapr common prequistes
     config.vm.provision "shell", path: "./common/common.sh"
   end
