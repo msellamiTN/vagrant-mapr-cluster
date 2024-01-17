@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
     # Edge Node
     config.vm.define "mapr-edge" do |edge|
       edge.vm.box = "ubuntu/focal64"
-      edge.vm.hostname = "mapr-edge"
+      edge.vm.hostname = "edge.htc-ezmeral.local"
       
        # Set memory, CPU, and disk resources
        edge.vm.disk :disk, size: "30GB", primary: true   
@@ -57,13 +57,17 @@ Vagrant.configure("2") do |config|
       edge.vm.network "public_network",  type: "static", ip: "192.168.56.10", bridge: "ens160"
       # Internal/private network for communication between VMs
       edge.vm.network "private_network", type: "static", ip: "192.168.56.10", virtualbox__intnet: true , name: "mapr-cluster-net" 
-      #edge.vm.provision "shell", path: "./mapr-installer/install_mapr.sh"
+      edge.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
+      edge.vm.provision "shell", inline: <<-SHELL
+      echo "127.0.0.1 localhost edge edge.htc-ezmeral.local" | sudo tee -a /tmp/hosts
+      sudo mv /tmp/hosts /etc/hosts
+        SHELL
     end
     # Master Node
    
      config.vm.define "mapr-master" do |master|
       master.vm.box = "ubuntu/focal64"
-      master.vm.hostname = "mapr-master"
+      master.vm.hostname = "master.htc-ezmeral.local"
        # Set memory, CPU, and disk resources
       master.vm.disk :disk, size: "30GB", primary: true 
       master.vm.disk :disk, size: "120GB", name: "mapr_data"
@@ -80,13 +84,18 @@ Vagrant.configure("2") do |config|
         master.vm.network "forwarded_port", guest: guest, host: host
      end
       master.vm.network "forwarded_port", guest: 22, host: 2221, id: "ssh", auto_correct: true
+      master.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
+      master.vm.provision "shell", inline: <<-SHELL
+      echo "127.0.0.1 localhost master master.htc-ezmeral.local " | sudo tee -a /tmp/hosts
+      sudo mv /tmp/hosts /etc/hosts
+        SHELL
     end
   
     # Worker Nodes
     (1..3).each do |i|
       config.vm.define "mapr-worker#{i}" do |worker|
         worker.vm.box = "ubuntu/focal64"
-        worker.vm.hostname = "mapr-worker#{i}"
+        worker.vm.hostname = "worker#{i}.htc-ezmeral.local"
          # Set memory, CPU, and disk resources
          worker.vm.disk :disk, size: "20GB", primary: true 
          worker.vm.disk :disk, size: "150GB", name: "mapr_data"
@@ -102,6 +111,10 @@ Vagrant.configure("2") do |config|
         worker.vm.network "forwarded_port", guest: 22, host: 2221 + i , id: "ssh", auto_correct: true
         worker_ports.each do |guest, host|
           worker.vm.network "forwarded_port", guest: guest, host: host + i,  auto_correct: true
+          worker.vm.provision "shell", inline: <<-SHELL
+              echo "127.0.0.1 localhost worker#{i} worker#{i}.htc-ezmeral.local "  | sudo tee -a /tmp/hosts
+              sudo mv /tmp/hosts /etc/hosts
+            SHELL
        end
         
       end
@@ -110,8 +123,6 @@ Vagrant.configure("2") do |config|
            # Provisioning with a shell script
     
      # Copy hosts file
-     config.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
-     config.vm.provision "shell", inline: "sudo mv /tmp/hosts /etc/hosts"
      config.vm.provision "file", source: "/home/user2/mapr-cluster/.ssh/id_rsa", destination: "/home/vagrant/.ssh/id_rsa"
      config.vm.provision "file", source: "/home/user2/mapr-cluster/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/id_rsa.pub"
      config.vm.provision "file", source: "/home/user2/mapr-cluster/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/authorized_keys"         
