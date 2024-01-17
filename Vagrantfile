@@ -59,6 +59,7 @@ Vagrant.configure("2") do |config|
       edge.vm.network "private_network", type: "static", ip: "192.168.56.10", virtualbox__intnet: true , name: "mapr-cluster-net" 
       edge.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
       edge.vm.provision "shell", inline: <<-SHELL
+      sudo hostnamectl set-hostname edge.htc-ezmeral.local
       sudo echo "127.0.0.1 localhost edge edge.htc-ezmeral.local" | sudo tee -a /tmp/hosts
       sudo mv /tmp/hosts | sudo tee -a /etc/hosts
         SHELL
@@ -86,6 +87,7 @@ Vagrant.configure("2") do |config|
       master.vm.network "forwarded_port", guest: 22, host: 2221, id: "ssh", auto_correct: true
       master.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
       master.vm.provision "shell", inline: <<-SHELL
+      sudo hostnamectl set-hostname master.htc-ezmeral.local
       sudo echo "127.0.0.1 localhost master master.htc-ezmeral.local " | sudo tee -a /tmp/hosts
       sudo cat /tmp/hosts | sudo tee -a /etc/hosts
         SHELL
@@ -114,6 +116,7 @@ Vagrant.configure("2") do |config|
        end
        worker.vm.provision "file", source: "external_hosts", destination: "/tmp/hosts"
           worker.vm.provision "shell", inline: <<-SHELL
+              sudo hostnamectl set-hostname worker#{i}.htc-ezmeral.local
               sudo echo "127.0.0.1 localhost worker#{i} worker#{i}.htc-ezmeral.local "  | sudo tee -a /tmp/hosts
               sudo mv /tmp/hosts | sudo tee -a /etc/hosts
             SHELL 
@@ -123,9 +126,9 @@ Vagrant.configure("2") do |config|
            # Provisioning with a shell script
     
      # Copy hosts file
-     config.vm.provision "file", source: "/home/user2/.ssh/id_rsa", destination: "/home/vagrant/.ssh/id_rsa"
-     config.vm.provision "file", source: "/home/user2/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/id_rsa.pub"
-     config.vm.provision "file", source: "/home/user2/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/authorized_keys"         
+     config.vm.provision "file", source: "/home/user2/mapr-cluster/.ssh/id_rsa", destination: "/home/vagrant/.ssh/id_rsa"
+     config.vm.provision "file", source: "/home/user2/mapr-cluster/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/id_rsa.pub"
+     config.vm.provision "file", source: "/home/user2/mapr-cluster/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/authorized_keys"         
     #installation of mapr common prequistes
     config.vm.provision "shell", path: "./common/common.sh"
   end
