@@ -1,0 +1,3 @@
+/dev/sda
+/dev/sdc
+/dev/sdc

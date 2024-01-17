@@ -1,0 +1,5 @@
+192.168.56.10 mapr-edge
+192.168.56.11 mapr-master
+192.168.56.12 mapr-worker1
+192.168.56.13 mapr-worker2
+192.168.56.14 mapr-worker3
